@@ -1,0 +1,25 @@
+{% load url from future %}
+<html>
+	<head>
+		<title>Planner</title>
+		<link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css" />
+		<link type="text/css" href="{{ STATIC_URL }}jquery-ui/css/ui-darkness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
+		<script type="text/javascript" src="{{ STATIC_URL }}json2.js"></script>
+		<script type="text/javascript" src="{{ STATIC_URL }}jquery.js"></script>
+		<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui/js/jquery-ui-1.8.14.custom.min.js"></script>
+		{% block extra_js %}{% endblock %}
+	</head>
+	
+	<body>
+		<div id="centered">
+		{% if user.is_authenticated %}
+    <p>Welcome, {{ user.username }}. Thanks for logging in.  <a href="{% url 'django.contrib.auth.views.logout_then_login' %}">logout</a></p>
+{% else %}
+    <p>Welcome. Please <a href="{% url "login_view" %}">log in</a>.</p>
+{% endif %}
+		{% block main %}{% endblock %}
+		<div id="ajax"></div>
+		</div>
+		{{ debug }}
+	</body>
+</html>

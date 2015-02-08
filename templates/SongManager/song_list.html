@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block extra_js %}
+<script type="text/javascript" src="{{ STATIC_URL }}jquery.form.js"></script>
+<script type="text/javascript">
+
+
+var last, diff
+
+function showResponse(responseObject, statusText, xhr, $form) {
+	/* //$('#id_song_list').html("").append("<table>");
+	//alert(responseObject.edit_perm);
+	var newhtml="<table>";
+	var song_list = JSON.parse(responseObject.songs_json);
+	$.each(song_list, function(index, song) {
+		newhtml+="<tr><th>"
+				+"<a href=\"" + song.extras.get_absolute_url + "\">"
+				+song.fields.title+"</a></th>"
+				+"<td>";
+		$.each(song.fields.composers, function(j, composer) {
+			if (j>0) newhtml+="<br/>";
+			newhtml+=composer.extras.__unicode__;
+		});
+		newhtml+="</td>";
+		if (responseObject.edit_perm)
+			newhtml+="<td> <a href=\"" + song.extras.get_update_url + "\">edit song</a></td>";
+		if (responseObject.delete_perm)		
+			newhtml+="<td> <a href=\"" + song.extras.get_delete_url + "\">delete song</a></td>";
+		newhtml+="</tr>";
+	});
+	newhtml+="</table>";
+	newhtml+="<div class=\"pagination\">"
+		+"<span class=\"step-links\">";
+	page = responseObject.page;
+
+	if (page.has_previous) {
+		newhtml+="<a id=\"id_prev\" href=\"?page_size="
+				 +page.page_size
+ 				 +"&page="
+				 +page.previous_page_number;
+		if (responseObject.search)
+			newhtml+="&search="
+				 +responseObject.search;
+		if (responseObject.option)
+			newhtml+="&options="
+				 +responseObject.option;
+		newhtml+="\">previous</a>";
+	}
+	newhtml+="<span class=\"current\">"
+			+"Page "
+			+ page.number 
+			+" of "
+			+ page.num_pages
+			+".</span>";
+	if (page.has_next) {
+		newhtml+="<a id=\"id_next\" href=\"?page_size="
+				 +page.page_size
+				 +"page="
+				 +page.next_page_number;
+		if(responseObject.search)
+				 newhtml+="&search="
+				 +responseObject.search;
+		if (responseObject.option)
+			newhtml+="&options="
+				 +responseObject.option;
+		newhtml+="\">next</a>";
+	}
+	$('#id_song_list').html(newhtml);*/
+	
+	$( '#id_song_list' ).html(responseObject.songs);
+}
+
+function autosubmit(eventObject) {
+	var TIMEOUT = 790;
+
+	var options = {
+//	    target: '#id_song_list',
+	    success: showResponse,
+	    url: '{% url 'song_list_view' %}?xhr',
+	    dataType: 'json'
+	}
+	if ( last ) {
+		diff = eventObject.timeStamp - last;
+	} else {
+		diff = TIMEOUT;
+	}
+	if (diff >= TIMEOUT) {
+		$( '#search_form' ).ajaxSubmit(options);
+		last = eventObject.timeStamp;	
+	}
+	else
+		$( '#id_search' ).trigger('keyup');
+}
+
+$( document ).ready( function() {
+	var options = {
+	    target: '#id_song_list',
+	    success: showResponse,
+	    url: '{% url 'song_list_view' %}?xhr',
+	    dataType: 'json'
+	}
+	
+	$( '#search_form' ).ajaxForm(options);
+	
+	$( '#id_search' ).keyup(autosubmit);
+	$( '#id_options' ).change(autosubmit);
+});
+</script>
+
+{% endblock %}
+
+{% block main %}
+<form id="search_form" method="get" action="{% url 'song_list_view' %}">
+{{ search_form }}
+<input id="search_submit" type="submit" value="Search"/>
+</form>
+<div id="id_song_list">
+{% block songlist %}
+{% include "SongManager/songs.html" %}
+{% endblock %}
+</div>
+<a href="{% url 'song_create_view' %}">Add New Song</a>
+{% endblock %}

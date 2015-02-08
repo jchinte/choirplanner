@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block main %}
+{% if event_list %}
+    <table>
+    {% for e in event_list|dictsortreversed:"date" %}
+        <tr>
+        	<th><a href="{{ e.get_absolute_url }}">{{ e.title }}</a></th>
+        	<td><a href="{{ e.get_absolute_url }}">{{ e.date }}</a></td>
+
+        	<td><a href="{% url 'event_update_view' e.id %}">edit</a></td> 
+        	<td><a href="{% url 'event_delete_view' e.id %}">delete</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No events are available.</p>
+{% endif %}
+<p>
+<a href="{% url 'event_create_view' %}">new event</a>
+<!--a href="{% url 'mass_create_view' %}">new mass</a-->
+</p>
+{% if templates %}
+<form id="template_choice_form" method="get" action="{% url 'template_event_create_view' %}"> 
+{{ templates }}
+<input id="template_choice_submit" type="submit" value="Create Event From Template"/>
+</form>
+{% endif %}
+{% endblock %}

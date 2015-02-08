@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block main %}
+{% if event_list %}
+    <table>
+    {% for e in event_list|dictsortreversed:"date" %}
+        <tr>
+        	<th><a href="{{ e.get_absolute_url }}">{{ e.title }}</a></th>
+        	<td><a href="{{ e.get_absolute_url }}">{{ e.date }}</a></td>
+        	{% if perms.Event_Planner.change_event %} 
+        		<td><a href="{% url 'event_update_view' e.id %}">edit</a></td>
+  			{% endif %}
+        	{% if perms.Event_Planner.delete_event %} 
+          	    <td><a href="{% url 'event_delete_view' e.id %}">delete</a></td>
+  			{% endif %}
+        	 
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No events are available.</p>
+{% endif %}
+<p>
+{% if perms.Event_Planner.add_event %} 
+    <a href="{% url 'event_create_view' %}">new event</a>
+q    <!--a href="{% url 'mass_create_view' %}">new mass</a-->
+
+
+	</p>
+	{% if templates %}
+		<form id="template_choice_form" method="get" action="{% url 'template_event_create_view' %}"> 
+			{{ templates }}
+			<input id="template_choice_submit" type="submit" value="Create Event From Template"/>
+		</form>
+	{% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block main %}
+<p>
+	<form id="id_form" method="post" action="./ajax/">
+<table>
+<tr><th>{{ form.role.label }}</th><td>{{ form.role.errors }}{{ form.role }}</td><td>
+<a href="{% url 'role_create_view' %}?back_url={{ curr_url }}">
+[+]
+</a>
+</td></tr>
+<tr><th>{{ form.participant.label }}</th><td>{{ form.participant.errors }}{{ form.participant }}</td><td>
+<a href="{% url 'participant_create_view' %}?back_url={{ curr_url }}">
+[+]
+</a>
+</td></tr>
+<tr><th>{{ form.send_reminder.label }}</th><td>{{ form.send_reminder.errors }}{{ form.send_reminder }}</td><td></td></tr>
+</table>
+{{ form.segment_event }}
+{% csrf_token %}
+<input id="id_Submit" type="submit" value="Save"/>
+</form>
+</p>
+
+<a href="{% url 'event_list_view' %}">go home</a>
+<div id="id_debug">
+</div>
+{% endblock %}

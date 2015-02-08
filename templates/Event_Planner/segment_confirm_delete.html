@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block main %}
+<p>
+
+
+<h1>{{ segment.title }}</h1>
+
+
+Are you sure you want to delete {{ segment.title }}?
+	<form id="delete_form" method="post" action=".">
+{% csrf_token %}
+<input id="deleteSubmit" type="submit" value="delete"/></form>
+<a href="{% url 'event_update_view' segment.event.id%}">cancel</a>
+
+</p>
+{% endblock %}

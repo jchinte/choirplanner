@@ -1,0 +1,14 @@
+{% if files %}
+	<ul>
+    {% for file in files %}
+        <li><a href="{{ file.file.url }}">{{ file.name }}
+        </a>
+        {% if delete %}
+        <a href="{% url 'songfile_delete_view' song_pk file.pk %}">delete file</a>
+        {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+<p> no files available. </p>
+{% endif %}

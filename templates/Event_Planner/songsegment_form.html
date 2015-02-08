@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block main %}
+<p>
+	<form id="id_form" method="post" action=".">
+<table>
+{{ form }}
+</table>
+{% csrf_token %}
+<input id="id_Submit" type="submit" value="Save"/>
+</form>
+</p>
+
+<a href="{% url 'event_list_view' %}">go home</a>
+<div id="id_debug">
+</div>
+{% endblock %}

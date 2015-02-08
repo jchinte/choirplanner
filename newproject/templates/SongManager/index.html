@@ -1,0 +1,17 @@
+{% if songs %}
+    <ul>
+    {% for song in songs %}
+        <li>
+        	<a href="/songs/{{ song.id }}/">{{ song.title }} --
+        	{% for c in song.composers.all %}
+        		{{ c.first_name }} {{ c.last_name }} ;
+        	{% endfor %}
+        	</a>
+        	<a href="{% 'url modify_song' song.id %}">edit song</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No songs are available.</p>
+{% endif %}
+<a href="{% url 'add_new_song' %}">Add New Song</a>

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block main %}
+<p>
+
+
+<h1>{{ song.title }}</h1>
+
+
+Are you sure you want to delete {{ song.title }}?
+	<form id="delete_form" method="post" action="{% url 'song_delete_view' song.id %}">
+{% csrf_token %}
+<input id="deleteSubmit" type="submit" value="delete"/></form>
+<a href="{% 'url song_list_view' %}">cancel</a>
+
+</p>
+{% endblock %}

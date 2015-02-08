@@ -1,0 +1,47 @@
+<div class="sortables" id="sortable_{{ form.instance.id }}">
+	<h3><a href="#{{ form.instance.id }}"><span class="segment-header">Section</span><span class="segment-modified"></span></a></h3>
+	<div>
+		<div>
+			{% if form.song %}
+				<form class="segment_form" id="id_form_{{ form.instance.id }}" method="post" action="{% url 'songsegment_update_view' event.pk form.instance.id %}"
+				    ajax_url="{% url 'json_segment_update_view' event.pk form.instance.id %}">
+			{% else %}
+				<form class="segment_form" id="id_form_{{ form.instance.id }}" method="post" action="{% url 'segment_update_view' event.pk form.instance.id %}"
+				    ajax_url="{% url 'json_segment_update_view' event.pk form.instance.id %}">
+			{% endif %}
+				{{ form.as_p }}
+				{% csrf_token %}
+				{% if form.song %}
+					
+					   <div>
+					   	Song: 
+						   <span id="segment-{{ form.instance.id }}-song-url">
+							{% if form.instance.song %}		   
+
+							   <a target="_blank" href="{{ form.instance.song.get_absolute_url }}">
+								   {{ form.instance.song.title }}
+							   </a>
+							{% else %}
+							   Please choose a song.
+							{% endif %}
+						   </span>
+
+						   <span> <button id="edit_song_seg_{{ form.instance.id }}" value="choose song..." instance={{ form.instance.id }}>choose song...</button> </span>
+						</div>
+					
+				{% endif %}
+				<input  class="segment_button" id="id_Submit_{{ form.instnace.id }}" type="submit" value="Save"/>
+				<a class="delete_link"
+					ajax_url="{% url 'json_segment_delete_view' event.pk form.instance.id %}"
+				       href="{% url 'segment_delete_view' event.pk form.instance.id %}">delete</a>
+			</form>
+		</div>
+		<div class="activity_div" id="activities-{{ form.instance.id }}">
+			{% include "Event_Planner/new_activity_form.html" with segment=form.instance event=event %}
+		</div>
+		<div class="segment-activity-buttons">
+			<a class="add_activity_link" ajax_url="{% url 'json_activity_create_view' form.instance.event.pk form.instance.id %}" href="{% url 'activity_create_view' form.instance.event.pk form.instance.id %}">new activity</a>
+			<a class="edit_link" href="{% url 'segment_update_view' form.instance.event.pk form.instance.id %}">edit</a>
+		</div>
+	</div>
+</div>

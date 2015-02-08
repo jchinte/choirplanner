@@ -1,0 +1,11 @@
+<ul>
+	{% for a in segment.activity_set.all %}
+		<li>
+			<span class="activity_span"><a class="activity_delete_link" ajax_url="{% url 'json_activity_delete_view' a.pk %}"
+													href="{% url 'activity_delete_view' segment.event.pk segment.id a.pk %}">[x]</a></span>
+			<span class="activity_span">{{ a.role.name }}</span>
+			<span class="activity_span">--</span>
+			<span class="activity_span"><a href="mailto:{{ a.participant.email }}">{{ a.participant.name }}</a></span>
+		</li>
+	{% endfor %}
+</ul>						

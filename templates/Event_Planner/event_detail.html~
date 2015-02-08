@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block main %}
+<p>
+<h1>{{ event.title }}</h1>
+<h2>{{ event.date }}</h2>
+<table>
+        <tr>
+	        <th />
+		<th> Title </th>
+		<th> Composer(s) </th>
+		<th> Notes </th>
+	</tr>
+{% for s in event.segment_set.all|dictsort:"order" %}
+	<tr>
+		<th>
+			{{ s.title }}
+		</th>
+		<td>
+			{% if s.songsegment %}
+				{% if s.songsegment.song %}
+					<br />
+					<a href="{{ s.songsegment.song.get_absolute_url }}">
+						{{ s.songsegment.song.title }}
+					</a>
+				{% endif %}
+			{% endif %}
+		</td>
+		<td>
+		        {% if s.songsegment %}
+                                {% if s.songsegment.song %}
+					{% for composer in s.songsegment.song.composers.all %}
+					        <br />
+						{{ composer.first_name }} {{ composer.last_name }}
+					{% endfor %}
+			        {% endif %}
+			{% endif %}
+		</td>
+		<td>{{ s.notes }}</td>
+		<td>
+		<table>
+		{% for a in s.activity_set.all %}
+			<tr>
+				<td>{{ a.role.name }}</td>
+				<td><a href="mailto:{{ a.participant.email }}">{{ a.participant.name }}</a></td>
+			</tr>
+		{% endfor %}
+		</table>
+		</td> 
+	</tr>
+{% endfor %}
+</table>
+</p>
+<a href="{% url 'event_update_view' event.id %}">edit</a> &nbsp;<a href="{% url 'event_list_view' %}">go home</a>
+<div id="id_debug">
+</div>
+{% endblock %}

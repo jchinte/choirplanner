@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block extra_js %}
+{% if file_form %}
+	<script type="text/javascript" src="{{ STATIC_URL }}jquery.form.js"></script>
+	<script type="text/javascript">
+	// post-submit callback 
+	function showResponse(responseText, statusText, xhr, $form)  { 
+	    // for normal html responses, the first argument to the success callback 
+	    // is the XMLHttpRequest object's responseText property 
+	 
+	    // if the ajaxForm method was passed an Options Object with the dataType 
+	    // property set to 'xml' then the first argument to the success callback 
+	    // is the XMLHttpRequest object's responseXML property 
+	 
+	    // if the ajaxForm method was passed an Options Object with the dataType 
+	    // property set to 'json' then the first argument to the success callback 
+	    // is the json data object returned by the server 
+	 	if (responseText.redirect) {
+	 		alert('need to redirect: ' + responseText.redirect);
+	 		window.location.href = responseText.redirect;
+	 	}
+	 	else {
+			$( '#result' ).html(responseText.result);
+			$( '#id_debug' ).html(responseText.debug);
+			alert(responseText);
+		}
+	} 
+	
+	function updateFiles(responseObject, statusText, xhr, $form)  { 
+	    // for normal html responses, the first argument to the success callback 
+	    // is the XMLHttpRequest object's responseText property 
+	 
+	    // if the ajaxForm method was passed an Options Object with the dataType 
+	    // property set to 'xml' then the first argument to the success callback 
+	    // is the XMLHttpRequest object's responseXML property 
+	 
+	    // if the ajaxForm method was passed an Options Object with the dataType 
+	    // property set to 'json' then the first argument to the success callback 
+	    // is the json data object returned by the server 
+	
+		$( '#id_files' ).html(responseObject.filedata);
+		$( '#id_debug' ).html(responseObject.debug);
+	} 
+	
+	
+	$( document ).ready( function() {
+		//alert("page ready")
+		var options = {
+			target:		'#result',
+			success:	showResponse,
+			url:		'?xhr',
+			dataType:	'json'
+		}
+		//$( '#modify_form' ).ajaxForm(options);
+	
+		
+		var upload_options = {
+			target: '#id_files',
+			success: updateFiles,
+			url: '{% url 'song_upload_view' song.id %}?xhr',
+			dataType:'json'
+		}
+		
+		$('#upload_form').ajaxForm(upload_options);
+	});
+	
+	
+	
+	$( document ).ajaxStart( function() {
+		$( '#spinner' ).show();
+	}).ajaxStop( function() {
+		$( '#spinner' ).hide();
+	});
+	
+	
+	</script>
+{% endif %}
+{% endblock %}
+
+{% block main %}
+
+<div>
+
+	{% if form.is_multipart %}
+	<form id="modify_form" enctype="multipart/form-data" method="post" action=".">
+	{% else %}
+	<form id="modify_form" method="post" action=".">
+	{% endif %}
+	{% csrf_token %}
+	<table>{{ form }}
+	</table>
+	<input id="searchSubmit" type="submit" value="Save"/>
+	</form>
+	<span class="hint">Type in a query string to search for users</span>
+	<div class="margin">
+		<span id="spinner"><img src="{{ STATIC_URL }}spinner.gif"/></span>
+		<div id="result"></div>
+	</div>
+	<p>
+	{% if file_form %}
+			<form id="upload_form" enctype="multipart/form-data" method="post" action="{% url 'song_upload_view' song.id %}">
+
+			{% csrf_token %}
+				<table>
+				{{ file_form }}
+				<tr><th><input id="fileSubmit" type="submit" value="Upload"/></th></tr>
+				</table>
+		</form>
+		<div id="id_files">
+		{% include "SongManager/files.html" %}
+		</div>
+	{% endif %}
+	</p>
+</div>
+<a href="{% url 'song_list_view' %}">back to song list</a>
+<div id="id_debug">
+</div>
+{% endblock %}

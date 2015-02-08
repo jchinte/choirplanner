@@ -1,0 +1,36 @@
+
+{% if song_list %}
+    <table>
+    {% for s in song_list %}
+        <tr>
+        	<th><a href="{{ s.get_absolute_url }}">{{ s.title }}</a></th>
+        	<td>{% for c in s.composers.all %}
+        		{{ c.first_name }} {{ c.last_name }} 
+        	{% endfor %}</td>
+        	{% if perms.SongManager.change_song %}
+        		<td><a href="{% url 'song_update_view' s.id %}">edit song</a></td>
+        	{% endif %}
+        	{% if perms.SongManager.delete_song %} 
+        		<td><a href="{% url 'song_delete_view' s.id %}">delete song</a></td>
+  			{% endif %}
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No songs are available.</p>
+{% endif %}
+<div class="pagination">
+    <span class="step-links">
+        {% if page.has_previous %}
+            <a id="id_prev" href="?page_size={{ page.page_size }}&page={{ page.previous_page_number }}&search={{ search }}&options={{ option }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page.number }} of {{ page.num_pages }}.
+        </span>
+
+        {% if page.has_next %}
+            <a id ="id_next" href="?page_size={{ page.page_size }}&page={{ page.next_page_number }}&search={{ search }}&options={{ option }}">next</a>
+        {% endif %}
+    </span>
+</div>

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block main %}
+<p>
+<h1>{{ user.username }}</h1>
+<h2>{{ user.first_name }} {{ user.last_name }}</h2>
+
+<p/>{{ user.email }}
+<p/>last login: {{ user.last_login }}
+<p>date joined: {{ user.date_joined }}</p>
+</p>
+<a href="{% url 'event_list_view' %}">go home</a>
+<div id="id_debug">
+</div>
+{% endblock %}

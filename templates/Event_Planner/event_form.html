@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block extra_js %}
+	
+{% if event %}
+
+	{% include "Event_Planner/event_form.js" %}
+	<div id="dialog-add-activity" style="display:none" title="add activity">
+		<p>adding activity</p>
+		<form id="activity_form" method="post">
+		<div id="dialog-add-activity-form"></div>
+		</form>
+	</div>
+
+	<div id="edit_song_dialog" style="display:none" title="choose song">
+		<p>pick song here</p>
+		<form id="search_form" method="get" action="{% url 'song_list_view' %}"> 
+		<p>{{ search_form.search.label }} {{ search_form.search }}		
+		<input id="search_submit" type="submit" value="Search"/> </p> 
+		<p>{{ search_form.options.label }} {{ search_form.options }} </p> 
+		</form> 
+		<div id="songs">
+		</div>
+	</div>
+	<div id="dialog-confirm" style="display:none" title="Delete?">
+		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This will be permanently deleted and cannot be recovered. Are you sure?</p>
+	</div>
+{% else %}
+	<script>
+		$(document).ready(function() {
+			$("#id_date_0").datepicker();
+			
+			$.widget( "ui.timespinner", $.ui.spinner, {
+    			options: {
+      			// seconds
+      			step: 60 * 1000 * 15,
+      			// hours
+      			page: 4
+    			},
+ 
+ 
+    			_parse: function( value ) {
+      			//alert("value = " + value);
+   				if (value == "") {
+						value = "9:00 AM";    				
+    				}
+      			if ( typeof value === "string" ) {
+        				// already a timestamp
+        				//alert( "Number(value) = " + Number(value));
+        				if ( Number( value ) == value ) {
+          				return Number( value );
+        				}
+        				//alert(Date.parse( "01 Jan 1970 " + value));
+        				return Date.parse( "01 Jan 1970 " + value );
+      			}	
+      			return value;
+    			},
+ 
+    			_format: function( value ) {
+
+      			//alert ("date: " + new Date(value));
+      			//alert ("format: " + Globalize.formatDate( new Date(value), { time: "medium" } ));
+      			//alert("_format");
+      			var options = {hour: "numeric", minute: "numeric"};
+      			//alert(":asda");
+      			return new Intl.DateTimeFormat("en-US", options).format(new Date(value));
+      			//return Date(value).toLocaleTimeString("h:mm tt");
+    			}
+  			});
+    
+			$("#id_date_1").timespinner();
+		});
+	</script>
+{% endif %}
+
+{% endblock %}
+{% block main %}
+<p>
+	<form id="id_form" method="post" action="">
+<table>
+{{ form }}
+</table>
+{% csrf_token %}
+<input id="id_Submit" type="submit" value="Save"/>
+</form>
+</p>
+
+<div id="accordion">	
+	{% if formlist %}
+		{% for f in formlist %}
+			{% include "Event_Planner/new_seg_form.html" with form=f event=event %}
+		{% endfor %}		
+	{% endif %}
+</div>
+{% if event %}
+<div>
+        <!--  BEGIN COMMENT
+	<p>
+	<a id="add_segment" href="?add_seg">Add new segment</a>
+	</p>
+	END COMMENT -->
+	<p>
+	<a id="add_songsegment" href="?add_songseg">Add new song</a>
+	</p>
+       
+<a href="{% url 'event_list_view' %}">go home</a>
+</div>
+{% endif %}
+<div id="id_debug">
+</div>
+{% endblock %}

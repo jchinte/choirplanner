@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block extra_js %}
+<script type="text/javascript">
+$( document ).ready( function() {
+	$( '#searchSubmit' ).click( function() {
+		$.post('{% url 'ajax_modify' %}?xhr', { title: $( '#title' ).val(), 
+											  composers: $( '#composers' ).val(),
+											  tags: $( '#tags' ).val(),
+											  id: $( '#songID' ).val()  }, function(data) {
+			alert("Data Loaded: " + data);
+		});
+		q = $( '#q' ).val();
+		$( '#results' ).html( '&nbsp;' ).load( '{% url 'ajax_modify' %}?xhr&q=' + q );
+	});
+	
+	$('#upload_form').submit(function() {
+		alert('.submit() handler called.');
+		$.post('{% url 'ajax_upload' %}?xhr', { file: $( '#id_file' ).val(), 
+											  song: $( '#id_song' ).val(),
+											 }, function(data) {
+			alert("Data Loaded: " + data);
+		});
+		
+		return false;
+	});
+});
+
+
+
+$( document ).ajaxStart( function() {
+	$( '#spinner' ).show();
+}).ajaxStop( function() {
+	$( '#spinner' ).hide();
+});
+
+$(document).ajaxSend(function(event, xhr, settings) {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function sameOrigin(url) {
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+    function safeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    }
+});
+</script>
+{% endblock %}
+
+{% block main %}
+
+<div>
+	<p>
+	Title
+	<input id="title" type="text" value="{{ song.title }}"/>
+	</p>
+	<p>
+	Composers
+	<input id="composers" type="text" value="{{ song.composers.all|join:" ; " }}" />
+	</p>
+	<p>
+	Tags
+	<input id="tags" type="text" value="{{ song.tags.all|join:" ; " }}" />
+	</p>
+	<p>
+	First Line
+	<input id="first_line" type="text"/>
+	</p>
+	<input id="songID" type="text" value="{{ song.id }}" />
+	<input id="searchSubmit" type="submit" value="Modify"/>
+	<br/>
+	<span class="hint">Type in a query string to search for users</span>
+	<div class="margin">
+		<span id="spinner"><img src="{{ MEDIA_URL }}spinner.gif"/></span>
+		<div id="results"></div>
+	</div>
+	<p>asdfasdfs
+		{% if not form.is_multipart %}
+			<form id="upload_form" enctype="multipart/form-data" method="post" action="{% url 'ajax_upload' %}">
+		{% else %}
+			<form id="upload_form" method="post" action="{% url 'ajax_upload' %}">
+		{% endif %}
+		{% csrf_token %}
+				<table>
+				{{ file_form }}
+				<tr><th><input id="fileSubmit" type="submit" value="Upload"/></th></tr>
+				</table>
+		</form>
+		<div id="id_files">{{ files }}</div>
+	</p>
+</div>
+{{ MEDIA_URL }} med url
+<a href="{% url 'song_index' %}">go home</a>
+{% endblock %}
